@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="EFCoreDatabaseLayer/EFCoreDatabaseLayer.csproj" Id="832667fa-b692-4a27-a303-beda78695e98" />
+  <Project Path="RAGWithEFCore/RAGWithEFCore.csproj" />
+  <Project Path="ServiceLayer/ServiceLayer.csproj" Id="2e766c68-6016-49b5-b80f-bffbcd2d739d" />
+</Solution>

@@ -1,0 +1,6 @@
+@RAGWithEFCore_HostAddress = http://localhost:5188
+
+GET {{RAGWithEFCore_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
