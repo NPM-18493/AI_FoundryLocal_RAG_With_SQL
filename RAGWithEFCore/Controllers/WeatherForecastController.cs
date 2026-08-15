@@ -15,8 +15,6 @@ namespace RAGWithEFCore.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
-            var result = _embeddingService.GenerateEmbeddingAsync("A lone wolf dies but pack survives").Result;
-
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),

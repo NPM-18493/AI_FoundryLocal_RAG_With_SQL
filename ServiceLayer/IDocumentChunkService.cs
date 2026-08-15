@@ -1,4 +1,5 @@
 ﻿using EFCoreDatabaseLayer.Models;
+using Microsoft.Data.SqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,7 +8,7 @@ namespace ServiceLayer
 {
     public interface IDocumentChunkService
     {
-        List<DocumentChunk> GetDocumentChunks();
+        List<DocumentChunk> GetDocumentChunks(SqlVector<float>? queryEmbedding);
         void AddDocumentChunk(DocumentChunk documentChunk);
     }
 }
