@@ -8,7 +8,7 @@ namespace ServiceLayer
 {
     public interface IDocumentChunkService
     {
-        List<DocumentChunk> GetDocumentChunks(SqlVector<float>? queryEmbedding);
+        List<DocumentChunk> GetDocumentChunks(SqlVector<float>? queryEmbedding, int noOfChunks = 3);
         void AddDocumentChunk(DocumentChunk documentChunk);
     }
 }

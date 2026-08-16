@@ -1,10 +1,11 @@
 ﻿using Microsoft.Data.SqlTypes;
 
-namespace RAGWithEFCore.Utilities
+namespace ServiceLayer.Utilities
 {
     public static class VectorToFloatConverter
     {
-        public static SqlVector<float> VectorToFloat(ReadOnlyMemory<double> input) {
+        public static SqlVector<float> VectorToFloat(ReadOnlyMemory<double> input)
+        {
 
             ReadOnlySpan<double> doubleSpan = input.Span;
             // Allocate float array from memory pool or stack span

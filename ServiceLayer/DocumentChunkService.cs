@@ -22,16 +22,19 @@ namespace ServiceLayer
             _context.SaveChanges();
         }
 
-        public List<DocumentChunk> GetDocumentChunks(SqlVector<float>? queryEmbedding)
+        public List<DocumentChunk> GetDocumentChunks(SqlVector<float>? queryEmbedding, int noOfChunks = 3)
         {
-            var indices = queryEmbedding != null
-                ? _context.ChunkEmbeddings
-                    .OrderBy(c => EF.Functions.VectorDistance("cosine", c.Embedding, queryEmbedding.Value))
-                    .Take(1)
-                    .Select(c => c.DocumentId)
-                : Enumerable.Empty<long>();
 
-            return _context.DocumentChunks.Where(c => queryEmbedding == null || indices.Contains(c.Id)).ToList();
+            var indices = _context.ChunkEmbeddings
+                    .OrderBy(c => EF.Functions.VectorDistance("cosine", c.Embedding, queryEmbedding.Value)) //cosine, euclidean, dot
+                    .Take(noOfChunks)
+                    .Select(c => new { DocumentId = c.DocumentId, Distance = EF.Functions.VectorDistance("cosine", c.Embedding, queryEmbedding.Value) });
+
+            var result = from c in _context.DocumentChunks
+                         join i in indices on c.Id equals i.DocumentId
+                         orderby i.Distance
+                         select c;
+            return result.ToList();
         }
     }
 }

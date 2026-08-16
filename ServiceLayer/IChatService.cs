@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using EFCoreDatabaseLayer.Models;
 
 namespace ServiceLayer
 {
     public interface IChatService
     {
-    Task<string> CompleteChatAsync(string prompt, CancellationToken cancellationToken = default);
+    Task<string> CompleteChatAsync(string prompt, IEnumerable<DocumentChunk> relevantChunks, CancellationToken cancellationToken = default);
     }
 }

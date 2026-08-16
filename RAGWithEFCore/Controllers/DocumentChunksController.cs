@@ -1,9 +1,8 @@
 ﻿using EFCoreDatabaseLayer.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlTypes;
-using RAGWithEFCore.Utilities;
 using ServiceLayer;
+using ServiceLayer.Utilities;
 
 namespace RAGWithEFCore.Controllers
 {
