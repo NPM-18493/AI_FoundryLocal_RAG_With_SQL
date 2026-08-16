@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { AddChunkPage } from './rag/AddChunkPage';
 import { SemanticSearchPage } from './rag/SemanticSearchPage';
+import { ChatPage } from './rag/ChatPage';
 
-type MenuId = 'semantic-search' | 'add-chunk';
+type MenuId = 'semantic-search' | 'add-chunk' | 'chat';
 
 export function App() {
     const [activeItem, setActiveItem] = useState<MenuId>('semantic-search');
@@ -44,6 +45,16 @@ export function App() {
                         <span>➕</span>
                         <span>Add Chunk</span>
                     </button>
+                    <button
+                        onClick={() => setActiveItem('chat')}
+                        style={{
+                            ...styles.navButton,
+                            ...(activeItem === 'chat' ? styles.activeButton : {}),
+                        }}
+                    >
+                        <span>💬</span>
+                        <span>Agent Chat</span>
+                    </button>
                 </nav>
             </aside>
 
@@ -51,6 +62,7 @@ export function App() {
             <main style={styles.content}>
                 {activeItem === 'semantic-search' && <SemanticSearchPage />}
                 {activeItem === 'add-chunk' && <AddChunkPage />}
+                {activeItem === 'chat' && <ChatPage />}
             </main>
         </div>
     );

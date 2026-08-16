@@ -20,35 +20,43 @@ var logger = loggerFactory.CreateLogger("FoundryLocal");
 
 await FoundryLocalManager.CreateAsync(config, logger);
 
+var catalog = await FoundryLocalManager.Instance.GetCatalogAsync();
+
+var embeddingModel = await catalog.GetModelVariantAsync("qwen3-embedding-0.6b-generic-cpu:1");
+await embeddingModel!.LoadAsync();
+
+var chatModel = await catalog.GetModelVariantAsync("qwen2.5-coder-0.5b-instruct-generic-cpu:4");
+await chatModel!.LoadAsync();
+
 // Register the loaded IModel instance directly
-builder.Services.AddSingleton<IModel>(sp =>
-{
-    var mgr = FoundryLocalManager.Instance;
-    var catalog = mgr.GetCatalogAsync().GetAwaiter().GetResult();
+//builder.Services.AddSingleton<IModel>(sp =>
+//{
+//    var mgr = FoundryLocalManager.Instance;
+//    var catalog = mgr.GetCatalogAsync().GetAwaiter().GetResult();
 
-    var model = catalog.GetModelAsync("qwen3-embedding-0.6b").Result;
+//    var model = catalog.GetModelAsync("qwen3-embedding-0.6b").Result;
 
-    if (model != null)
-    {
-        // Find the CPU variant from available variants
-        var cpuVariant = model.Variants.FirstOrDefault(v =>
-            v.Id.Contains("cpu", StringComparison.OrdinalIgnoreCase));
+//    if (model != null)
+//    {
+//        // Find the CPU variant from available variants
+//        var cpuVariant = model.Variants.FirstOrDefault(v =>
+//            v.Id.Contains("cpu", StringComparison.OrdinalIgnoreCase));
 
-        if (cpuVariant != null)
-        {
-            // Explicitly override the hardware selection
-            model.SelectVariant(cpuVariant);
-        }
+//        if (cpuVariant != null)
+//        {
+//            // Explicitly override the hardware selection
+//            model.SelectVariant(cpuVariant);
+//        }
 
-        if (!model.IsCachedAsync().Result)
-        {
-            model.DownloadAsync().Wait();
-        }
+//        if (!model.IsCachedAsync().Result)
+//        {
+//            model.DownloadAsync().Wait();
+//        }
 
-        model.LoadAsync().Wait();
-    }
-    return model!;
-});
+//        model.LoadAsync().Wait();
+//    }
+//    return model!;
+//});
 
 builder.Services.AddCors(options=>
 {
@@ -67,7 +75,9 @@ builder.Services.AddDbContext<LearningRagwithSqlContext>(options =>
     options.UseSqlServer(connectionString));
 
 // Register domain wrapper
-builder.Services.AddSingleton<ICustomEmbeddingService, FoundryEmbeddingService>();
+builder.Services.AddSingleton<ICustomEmbeddingService>(new FoundryEmbeddingService(embeddingModel!));
+builder.Services.AddSingleton<IChatService>(new ChatService(chatModel!));
+
 builder.Services.AddScoped<IDocumentChunkService, DocumentChunkService>();
 
 
