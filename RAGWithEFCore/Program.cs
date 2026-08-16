@@ -1,4 +1,3 @@
-using Betalgo.Ranul.OpenAI.Interfaces;
 using EFCoreDatabaseLayer.Models;
 using Microsoft.AI.Foundry.Local;
 using Microsoft.EntityFrameworkCore;
@@ -21,34 +20,52 @@ var logger = loggerFactory.CreateLogger("FoundryLocal");
 
 await FoundryLocalManager.CreateAsync(config, logger);
 
+var catalog = await FoundryLocalManager.Instance.GetCatalogAsync();
+
+var embeddingModel = await catalog.GetModelVariantAsync("qwen3-embedding-0.6b-generic-cpu:1");
+await embeddingModel!.LoadAsync();
+
+var chatModel = await catalog.GetModelVariantAsync("qwen2.5-coder-0.5b-instruct-generic-cpu:4");
+await chatModel!.LoadAsync();
+
 // Register the loaded IModel instance directly
-builder.Services.AddSingleton<IModel>(sp =>
+//builder.Services.AddSingleton<IModel>(sp =>
+//{
+//    var mgr = FoundryLocalManager.Instance;
+//    var catalog = mgr.GetCatalogAsync().GetAwaiter().GetResult();
+
+//    var model = catalog.GetModelAsync("qwen3-embedding-0.6b").Result;
+
+//    if (model != null)
+//    {
+//        // Find the CPU variant from available variants
+//        var cpuVariant = model.Variants.FirstOrDefault(v =>
+//            v.Id.Contains("cpu", StringComparison.OrdinalIgnoreCase));
+
+//        if (cpuVariant != null)
+//        {
+//            // Explicitly override the hardware selection
+//            model.SelectVariant(cpuVariant);
+//        }
+
+//        if (!model.IsCachedAsync().Result)
+//        {
+//            model.DownloadAsync().Wait();
+//        }
+
+//        model.LoadAsync().Wait();
+//    }
+//    return model!;
+//});
+
+builder.Services.AddCors(options=>
 {
-    var mgr = FoundryLocalManager.Instance;
-    var catalog = mgr.GetCatalogAsync().GetAwaiter().GetResult();
-
-    var model = catalog.GetModelAsync("qwen3-embedding-0.6b").Result;
-
-    if (model != null)
+    options.AddPolicy("AllowFrontend", builder =>
     {
-        // Find the CPU variant from available variants
-        var cpuVariant = model.Variants.FirstOrDefault(v =>
-            v.Id.Contains("cpu", StringComparison.OrdinalIgnoreCase));
-
-        if (cpuVariant != null)
-        {
-            // Explicitly override the hardware selection
-            model.SelectVariant(cpuVariant);
-        }
-
-        if (!model.IsCachedAsync().Result)
-        {
-            model.DownloadAsync().Wait();
-        }
-
-        model.LoadAsync().Wait();
-    }
-    return model!;
+        builder.WithOrigins("http://localhost:52543")
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
 });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -58,23 +75,23 @@ builder.Services.AddDbContext<LearningRagwithSqlContext>(options =>
     options.UseSqlServer(connectionString));
 
 // Register domain wrapper
-builder.Services.AddSingleton<ICustomEmbeddingService, FoundryEmbeddingService>();
+builder.Services.AddSingleton<ICustomEmbeddingService>(new FoundryEmbeddingService(embeddingModel!));
+builder.Services.AddSingleton<IChatService>(new ChatService(chatModel!));
+
 builder.Services.AddScoped<IDocumentChunkService, DocumentChunkService>();
 
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
+// Enable CORS for SPA
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 

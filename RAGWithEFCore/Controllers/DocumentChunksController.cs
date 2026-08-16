@@ -1,8 +1,8 @@
 ﻿using EFCoreDatabaseLayer.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RAGWithEFCore.Utilities;
+using Microsoft.Data.SqlTypes;
 using ServiceLayer;
+using ServiceLayer.Utilities;
 
 namespace RAGWithEFCore.Controllers
 {
@@ -20,9 +20,10 @@ namespace RAGWithEFCore.Controllers
         }
 
         [HttpGet(Name = "GetDocumentChunks")]
-        public IEnumerable<DocumentChunk> Get()
+        public IEnumerable<DocumentChunk> Get(string query)
         {
-            return _documentChunkService.GetDocumentChunks();
+            SqlVector<float>? queryEmbedding = string.IsNullOrEmpty(query) ? null : VectorToFloatConverter.VectorToFloat(_embeddingService.GenerateEmbeddingAsync(query).Result);
+            return _documentChunkService.GetDocumentChunks(queryEmbedding);
         }
 
         [HttpPost(Name = "AddDocumentChunk")]
