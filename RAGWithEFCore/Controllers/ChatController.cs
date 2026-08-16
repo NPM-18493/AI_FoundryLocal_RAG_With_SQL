@@ -32,7 +32,7 @@ namespace RAGWithEFCore.Controllers
         private List<DocumentChunk> GetReleventDocumentChunks(string query)
         {
             SqlVector<float>? queryEmbedding = string.IsNullOrEmpty(query) ? null : VectorToFloatConverter.VectorToFloat(_embeddingService.GenerateEmbeddingAsync(query).Result);
-            return _documentChunkService.GetDocumentChunks(queryEmbedding, 5);
+            return _documentChunkService.GetDocumentChunks(queryEmbedding, 3);
         }
     }
 }
