@@ -1,7 +1,9 @@
-﻿using EFCoreDatabaseLayer.Models;
+﻿using DTOs;
+using EFCoreDatabaseLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlTypes;
-using ServiceLayer;
+using ServiceLayer.Document_Chunk;
+using ServiceLayer.Embedding;
 using ServiceLayer.Utilities;
 
 namespace RAGWithEFCore.Controllers
@@ -20,26 +22,30 @@ namespace RAGWithEFCore.Controllers
         }
 
         [HttpGet(Name = "GetDocumentChunks")]
-        public IEnumerable<DocumentChunk> Get(string query)
+        public IEnumerable<DocumentChunkDTO> Get(string query)
         {
             SqlVector<float>? queryEmbedding = string.IsNullOrEmpty(query) ? null : VectorToFloatConverter.VectorToFloat(_embeddingService.GenerateEmbeddingAsync(query).Result);
             return _documentChunkService.GetDocumentChunks(queryEmbedding);
         }
 
         [HttpPost(Name = "AddDocumentChunk")]
-        public IActionResult Post([FromBody] DocumentChunk documentChunk)
+        public IActionResult Post([FromBody] DocumentChunkDTO documentChunk)
         {
             ReadOnlyMemory<double> chunkEmbedding = _embeddingService.GenerateEmbeddingAsync(documentChunk.ChunkText).Result;
-            _documentChunkService.AddDocumentChunk(new DocumentChunk()
-            {
-                ChunkText = documentChunk.ChunkText,
-                CreatedAt = DateTime.UtcNow,
-                ChunkEmbeddings = [
-                    new ChunkEmbedding {
-                        Embedding = VectorToFloatConverter.VectorToFloat(chunkEmbedding)
-                    }
-                    ]
-            });
+            _documentChunkService.AddDocumentChunk(new DocumentChunkDTO(
+                Id: null,
+                ChunkText: documentChunk.ChunkText,
+                CreatedAt: DateTimeOffset.UtcNow,
+                ChunkEmbeddings: new List<ChunkEmbeddingDTO>
+                {
+                    new ChunkEmbeddingDTO(
+                        Id: null,
+                        DocumentId: null,
+                        Embedding: VectorToFloatConverter.VectorToFloat(chunkEmbedding),
+                        Document: null!
+                    )
+                }
+            ));
             return CreatedAtRoute("GetDocumentChunks", new { id = documentChunk.Id }, documentChunk);
         }
     }

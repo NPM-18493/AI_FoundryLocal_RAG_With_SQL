@@ -1,7 +1,10 @@
-﻿using EFCoreDatabaseLayer.Models;
+﻿using DTOs;
+using EFCoreDatabaseLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlTypes;
-using ServiceLayer;
+using ServiceLayer.Chat;
+using ServiceLayer.Document_Chunk;
+using ServiceLayer.Embedding;
 using ServiceLayer.Utilities;
 
 namespace RAGWithEFCore.Controllers
@@ -24,12 +27,12 @@ namespace RAGWithEFCore.Controllers
         [HttpGet]
         public async Task<IActionResult> GetChatResponse([FromQuery] string prompt)
         {
-            IEnumerable<DocumentChunk> relevantChunks = GetReleventDocumentChunks(prompt);
+            IEnumerable<DocumentChunkDTO> relevantChunks = GetReleventDocumentChunks(prompt);
             var response = await _chatService.CompleteChatAsync(prompt, relevantChunks);
             return Ok(response);
         }
 
-        private List<DocumentChunk> GetReleventDocumentChunks(string query)
+        private List<DocumentChunkDTO> GetReleventDocumentChunks(string query)
         {
             SqlVector<float>? queryEmbedding = string.IsNullOrEmpty(query) ? null : VectorToFloatConverter.VectorToFloat(_embeddingService.GenerateEmbeddingAsync(query).Result);
             return _documentChunkService.GetDocumentChunks(queryEmbedding, 3);

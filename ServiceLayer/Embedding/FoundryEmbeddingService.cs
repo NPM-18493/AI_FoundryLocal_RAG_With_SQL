@@ -1,6 +1,6 @@
 ﻿using Microsoft.AI.Foundry.Local;
 
-namespace ServiceLayer
+namespace ServiceLayer.Embedding
 {
     public class FoundryEmbeddingService: ICustomEmbeddingService
     {
