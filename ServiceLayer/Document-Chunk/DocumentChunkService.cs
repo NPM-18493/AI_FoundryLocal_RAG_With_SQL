@@ -1,4 +1,5 @@
-﻿using EFCoreDatabaseLayer.Models;
+﻿using DTOs;
+using EFCoreDatabaseLayer.Models;
 using Microsoft.Data.SqlTypes;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,13 +17,20 @@ namespace ServiceLayer.Document_Chunk
             _context = context;
         }
 
-        public void AddDocumentChunk(DocumentChunk documentChunk)
+        public void AddDocumentChunk(DocumentChunkDTO documentChunk)
         {
-            _context.DocumentChunks.Add(documentChunk);
+            _context.DocumentChunks.Add(new DocumentChunk() {
+                ChunkText = documentChunk.ChunkText,
+                ChunkEmbeddings = documentChunk.ChunkEmbeddings?.Select(e => new ChunkEmbedding()
+                {
+                    Embedding = e.Embedding
+                }).ToList(),
+                CreatedAt = documentChunk.CreatedAt
+            });
             _context.SaveChanges();
         }
 
-        public List<DocumentChunk> GetDocumentChunks(SqlVector<float>? queryEmbedding, int noOfChunks = 3)
+        public List<DocumentChunkDTO> GetDocumentChunks(SqlVector<float>? queryEmbedding, int noOfChunks = 3)
         {
 
             var indices = _context.ChunkEmbeddings
@@ -33,7 +41,7 @@ namespace ServiceLayer.Document_Chunk
             var result = from c in _context.DocumentChunks
                          join i in indices on c.Id equals i.DocumentId
                          orderby i.Distance
-                         select c;
+                         select c.ToDTO();
             return result.ToList();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Betalgo.Ranul.OpenAI.Interfaces;
 using Betalgo.Ranul.OpenAI.ObjectModels.RequestModels;
+using DTOs;
 using EFCoreDatabaseLayer.Models;
 using Microsoft.AI.Foundry.Local;
 using Microsoft.Data.SqlTypes;
@@ -16,7 +17,7 @@ namespace ServiceLayer.Chat
         {
             _model = model;
         }
-        public async Task<string> CompleteChatAsync(string prompt, IEnumerable<DocumentChunk> relevantChunks, CancellationToken cancellationToken = default)
+        public async Task<string> CompleteChatAsync(string prompt, IEnumerable<DocumentChunkDTO> relevantChunks, CancellationToken cancellationToken = default)
         {
             var client = await _model.GetChatClientAsync();
             var messages = new List<ChatMessage> {

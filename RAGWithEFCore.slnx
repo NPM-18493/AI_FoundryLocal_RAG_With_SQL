@@ -2,6 +2,7 @@
   <Folder Name="/Solution Items/">
     <File Path="README.md" />
   </Folder>
+  <Project Path="DTOs/DTOs.csproj" Id="63e901f6-9009-46ca-8816-9fac51900073" />
   <Project Path="EFCoreDatabaseLayer/EFCoreDatabaseLayer.csproj" Id="832667fa-b692-4a27-a303-beda78695e98" />
   <Project Path="Frontend/frontend.esproj">
     <Build />
