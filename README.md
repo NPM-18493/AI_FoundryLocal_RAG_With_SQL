@@ -47,3 +47,7 @@ GO`
 Entity framework Core 10 has come up with features related to semantic search. We have leverage them in this example. Nuget package references are part of the csproj files so no additional download required.
 
 I have used database first model in this example.
+
+## Other
+
+Instead of AutoMapper, C# extension method is used in this example for mapping entity to DTO
