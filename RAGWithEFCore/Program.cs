@@ -1,7 +1,9 @@
 using EFCoreDatabaseLayer.Models;
 using Microsoft.AI.Foundry.Local;
 using Microsoft.EntityFrameworkCore;
-using ServiceLayer;
+using ServiceLayer.Chat;
+using ServiceLayer.Document_Chunk;
+using ServiceLayer.Embedding;
 
 var builder = WebApplication.CreateBuilder(args);
 

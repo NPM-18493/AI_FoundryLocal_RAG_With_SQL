@@ -1,7 +1,7 @@
 ﻿using EFCoreDatabaseLayer.Models;
 using Microsoft.Data.SqlTypes;
 
-namespace ServiceLayer
+namespace ServiceLayer.Document_Chunk
 {
     public interface IDocumentChunkService
     {

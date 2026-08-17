@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ServiceLayer
+namespace ServiceLayer.Document_Chunk
 {
     public class DocumentChunkService : IDocumentChunkService
     {

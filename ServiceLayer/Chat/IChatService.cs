@@ -1,6 +1,6 @@
 ﻿using EFCoreDatabaseLayer.Models;
 
-namespace ServiceLayer
+namespace ServiceLayer.Chat
 {
     public interface IChatService
     {

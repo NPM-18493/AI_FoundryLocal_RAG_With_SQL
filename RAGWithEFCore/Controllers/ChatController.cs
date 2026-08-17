@@ -1,7 +1,9 @@
 ﻿using EFCoreDatabaseLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlTypes;
-using ServiceLayer;
+using ServiceLayer.Chat;
+using ServiceLayer.Document_Chunk;
+using ServiceLayer.Embedding;
 using ServiceLayer.Utilities;
 
 namespace RAGWithEFCore.Controllers

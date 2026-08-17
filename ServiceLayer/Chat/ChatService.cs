@@ -6,7 +6,7 @@ using Microsoft.Data.SqlTypes;
 using ServiceLayer.Utilities;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace ServiceLayer
+namespace ServiceLayer.Chat
 {
     public class ChatService : IChatService
     {

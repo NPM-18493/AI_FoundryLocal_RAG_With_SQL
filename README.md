@@ -38,7 +38,6 @@ GO`
     CONSTRAINT FK_ChunkEmbeddings_DocumentChunks FOREIGN KEY (DocumentId) 
         REFERENCES dbo.DocumentChunks (Id) ON DELETE CASCADE
 );
-
 CREATE NONCLUSTERED INDEX IX_ChunkEmbeddings_DocumentId 
     ON dbo.ChunkEmbeddings (DocumentId);
 GO`
